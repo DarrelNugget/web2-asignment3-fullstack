@@ -1,0 +1,96 @@
+'use client';
+import Link from "next/link";
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
+export default function LoginForm() {
+
+	const [email, setEmail] = useState('');
+	const [error, setError] = useState('');
+	const [password, setPassword] = useState('');
+
+	const router = useRouter();
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+
+		try {
+			console.log("Checkpoint-01");
+
+			const res = await signIn('credentials', {
+				email,
+				password,
+				redirect: false,
+			});
+
+			console.log('next/auth - response : ', res);
+
+			if (res.error) {
+				setError("Invalid Credentials");
+				return;
+			}
+
+			if (email === "admin@gmail.com") {
+
+				console.log("Checkpoint-02 : redirect to Admin Dashboard");
+				router.replace("adminDashboard");
+
+			} else {
+				console.log("Checkpoint-03 : redirect to User Dashboard");
+				router.replace("userDashboard");
+			}
+
+
+		} catch (error) { console.log(error) }
+	};
+
+
+
+	return (
+		<>
+			<header className="bg-blue-950 text-white flex items-center justify-center w-full fixed top-0 text-xl text-center font-bold py-4">
+				<div className="flex items-center">
+					
+					<span className="te">Movies Rental</span>
+				</div>
+			</header>
+
+			<footer className='bg-blue-950 text-white flex flex-col w-full text-center fixed bottom-0 p-8'>
+				
+				
+			</footer>
+
+
+			<div className="grid place-items-center h-screen">
+				<div className="shadow-lg p-6 rounded-lg border-t-8 border-black">
+					<h1 className="text-xl font-bold my-4">Login</h1>
+					<form onSubmit={handleSubmit} className="flex flex-col gap-3">
+						<input onChange={(e) => setEmail(e.target.value)} type="text" placeholder="Email" />
+						<input onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Password" />
+						<button className="bg-black text-white text-xl font-bold rounded-lg cursor-pointer mt-4 px-6 py-2">Login</button>
+
+						{error && (
+							<div className="bg-red-600 text-white w-fit text-sm py-1 px-3 rounded-md mt-2">{error}</div>
+						)}
+
+						<Link className="text-lg mt-3 text-right" href={"RegisterForm"}>
+							{"Don't have an account ? "}
+							<span className="underline">Register</span>
+
+						</Link>
+
+					</form>
+				</div>
+			</div>
+		</>
+	);
+}
+
+
+
+
+
+
+
+
